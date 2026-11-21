@@ -1,0 +1,438 @@
+{
+  "entities": {
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Trusted registry of platform administrator UIDs.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "minLength": 3, "maxLength": 254 },
+        "grantedBy": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "grantedBy", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Platform user account profile and access status.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 254 },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "status": { "type": "string", "enum": ["active", "suspended"] },
+        "emailVerified": { "type": "boolean" },
+        "phone": { "type": "string", "minLength": 0, "maxLength": 24 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role", "status", "emailVerified", "createdAt", "updatedAt"]
+    },
+    "Wallet": {
+      "title": "Wallet",
+      "description": "User fiat and coin wallet balances.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "balance": { "type": "number" },
+        "coinBalance": { "type": "number" },
+        "totalDeposits": { "type": "number" },
+        "totalWithdrawals": { "type": "number" },
+        "totalEarnings": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "balance", "coinBalance", "totalDeposits", "totalWithdrawals", "totalEarnings", "updatedAt"]
+    },
+    "Plan": {
+      "title": "Plan",
+      "description": "Admin-configurable reward and investment plan.",
+      "type": "object",
+      "properties": {
+        "planId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "amount": { "type": "number" },
+        "durationDays": { "type": "integer" },
+        "payoutMultiplier": { "type": "number" },
+        "coinCost": { "type": "number" },
+        "bonusCoins": { "type": "number" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "eligibility": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "terms": { "type": "string", "minLength": 1, "maxLength": 1500 },
+        "maxPerUser": { "type": "integer" },
+        "enabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["planId", "name", "amount", "durationDays", "payoutMultiplier", "coinCost", "bonusCoins", "description", "eligibility", "terms", "maxPerUser", "enabled", "createdAt", "updatedAt"]
+    },
+    "Investment": {
+      "title": "Investment",
+      "description": "User active or historical plan subscription.",
+      "type": "object",
+      "properties": {
+        "investmentId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "planId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "planName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "amount": { "type": "number" },
+        "payoutMultiplier": { "type": "number" },
+        "expectedReturn": { "type": "number" },
+        "durationDays": { "type": "integer" },
+        "startDate": { "type": "string", "format": "date-time" },
+        "maturityDate": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "active", "completed", "cancelled", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["investmentId", "uid", "planId", "planName", "amount", "payoutMultiplier", "expectedReturn", "durationDays", "startDate", "maturityDate", "status", "createdAt", "updatedAt"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Admin-managed reward task.",
+      "type": "object",
+      "properties": {
+        "taskId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "instructions": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "reward": { "type": "number" },
+        "coinReward": { "type": "number" },
+        "taskType": { "type": "string", "enum": ["daily", "one_time", "promotional", "custom"] },
+        "status": { "type": "string", "enum": ["active", "paused", "disabled"] },
+        "maxSubmissions": { "type": "integer" },
+        "verificationRules": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["taskId", "title", "description", "instructions", "reward", "coinReward", "taskType", "status", "maxSubmissions", "verificationRules", "startDate", "endDate", "createdAt", "updatedAt"]
+    },
+    "TaskSubmission": {
+      "title": "TaskSubmission",
+      "description": "User submission and verification record for a task.",
+      "type": "object",
+      "properties": {
+        "submissionId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "taskId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "taskTitle": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "proof": { "type": "string", "minLength": 0, "maxLength": 2000 },
+        "rewardAmount": { "type": "number" },
+        "coinReward": { "type": "number" },
+        "status": { "type": "string", "enum": ["in_progress", "submitted", "pending_verification", "approved", "rejected", "completed"] },
+        "adminRemarks": { "type": "string", "minLength": 0, "maxLength": 500 },
+        "rewardCredited": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["submissionId", "uid", "userName", "taskId", "taskTitle", "proof", "rewardAmount", "coinReward", "status", "adminRemarks", "rewardCredited", "createdAt", "updatedAt"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Payment gateway or UPI deposit verification record.",
+      "type": "object",
+      "properties": {
+        "paymentId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "paymentRequestId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "upiAccountId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "upiId": { "type": "string", "minLength": 5, "maxLength": 120 },
+        "amount": { "type": "number" },
+        "coinsToCredit": { "type": "number" },
+        "coinRate": { "type": "number" },
+        "gateway": { "type": "string", "enum": ["razorpay", "upi_manual"] },
+        "paymentReference": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "utr": { "type": "string", "minLength": 0, "maxLength": 80 },
+        "status": { "type": "string", "enum": ["created", "pending", "verified", "completed", "failed", "expired", "cancelled", "refunded"] },
+        "verifiedBy": { "type": "string", "minLength": 0, "maxLength": 128 },
+        "verifiedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["paymentId", "uid", "userName", "amount", "coinsToCredit", "coinRate", "gateway", "paymentReference", "utr", "status", "createdAt", "updatedAt"]
+    },
+    "UpiAccount": {
+      "title": "UpiAccount",
+      "description": "Admin-managed merchant UPI receiving handle.",
+      "type": "object",
+      "properties": {
+        "upiAccountId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "upiId": { "type": "string", "minLength": 5, "maxLength": 120, "pattern": "^[a-zA-Z0-9.\\-_]{2,}@[a-zA-Z0-9]{2,}$" },
+        "displayName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "status": { "type": "string", "enum": ["active", "disabled"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["upiAccountId", "upiId", "displayName", "status", "createdAt", "updatedAt"]
+    },
+    "UpiAssignment": {
+      "title": "UpiAssignment",
+      "description": "Immutable historical log of UPI ID assignments per payment request.",
+      "type": "object",
+      "properties": {
+        "assignmentId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "paymentRequestId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "upiAccountId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "upiId": { "type": "string", "minLength": 5, "maxLength": 120 },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["created", "pending", "verified", "completed", "failed", "expired", "cancelled", "refunded"] },
+        "assignedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["assignmentId", "paymentRequestId", "userId", "upiAccountId", "amount", "status", "assignedAt", "expiresAt"]
+    },
+    "UpiAnalytics": {
+      "title": "UpiAnalytics",
+      "description": "Admin-only aggregated live analytics per UPI account.",
+      "type": "object",
+      "properties": {
+        "upiAccountId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "totalAssignments": { "type": "integer" },
+        "pendingPayments": { "type": "integer" },
+        "successfulPayments": { "type": "integer" },
+        "failedPayments": { "type": "integer" },
+        "expiredPayments": { "type": "integer" },
+        "totalVerifiedAmount": { "type": "number" },
+        "lastAssignedAt": { "type": "string", "format": "date-time" },
+        "lastVerifiedAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["upiAccountId", "totalAssignments", "pendingPayments", "successfulPayments", "failedPayments", "expiredPayments", "totalVerifiedAmount", "updatedAt"]
+    },
+    "UpiRotation": {
+      "title": "UpiRotation",
+      "description": "Global round-robin rotation pointer across active merchant UPI accounts.",
+      "type": "object",
+      "properties": {
+        "rotationId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "lastUpiAccountId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "lastUpiId": { "type": "string", "minLength": 5, "maxLength": 120, "pattern": "^[a-zA-Z0-9.\\-_]{2,}@[a-zA-Z0-9]{2,}$" },
+        "sequenceNumber": { "type": "integer" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["rotationId", "lastUpiAccountId", "lastUpiId", "sequenceNumber", "updatedAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Immutable financial and coin ledger record.",
+      "type": "object",
+      "properties": {
+        "transactionId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "type": { "type": "string", "enum": ["deposit", "coin_credit", "coin_debit", "plan_purchase", "reward", "task_reward", "withdrawal", "refund"] },
+        "amount": { "type": "number" },
+        "coinAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "completed", "failed", "reversed"] },
+        "reference": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["transactionId", "uid", "type", "amount", "coinAmount", "status", "reference", "description", "createdAt"]
+    },
+    "WithdrawalRequest": {
+      "title": "WithdrawalRequest",
+      "description": "User payout withdrawal request.",
+      "type": "object",
+      "properties": {
+        "requestId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "amount": { "type": "number" },
+        "payoutMethod": { "type": "string", "enum": ["bank", "upi"] },
+        "payoutSummary": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "status": { "type": "string", "enum": ["pending", "under_review", "approved", "processing", "paid", "rejected"] },
+        "payoutReference": { "type": "string", "minLength": 0, "maxLength": 120 },
+        "adminRemarks": { "type": "string", "minLength": 0, "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["requestId", "uid", "userName", "amount", "payoutMethod", "payoutSummary", "status", "payoutReference", "adminRemarks", "createdAt", "updatedAt"]
+    },
+    "BankDetails": {
+      "title": "BankDetails",
+      "description": "Protected user bank payout details.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "accountHolderName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "bankName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "accountNumber": { "type": "string", "minLength": 6, "maxLength": 32, "pattern": "^[0-9]{6,32}$" },
+        "accountNumberLast4": { "type": "string", "minLength": 4, "maxLength": 4, "pattern": "^[0-9]{4}$" },
+        "ifscCode": { "type": "string", "minLength": 11, "maxLength": 11, "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$" },
+        "branchName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "accountHolderName", "bankName", "accountNumber", "accountNumberLast4", "ifscCode", "branchName", "updatedAt"]
+    },
+    "UpiDetails": {
+      "title": "UpiDetails",
+      "description": "Protected user UPI payout details.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "upiId": { "type": "string", "minLength": 5, "maxLength": 120, "pattern": "^[a-zA-Z0-9.\\-_]{2,}@[a-zA-Z]{2,}$" },
+        "displayName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "upiId", "displayName", "updatedAt"]
+    },
+    "AdminSettings": {
+      "title": "AdminSettings",
+      "description": "Global platform configuration controlled by admins.",
+      "type": "object",
+      "properties": {
+        "settingsId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "websiteName": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "upiId": { "type": "string", "minLength": 5, "maxLength": 120 },
+        "upiDisplayName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "paymentInstructions": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "gatewayProvider": { "type": "string", "enum": ["razorpay", "upi_manual"] },
+        "coinRate": { "type": "number" },
+        "minCoinPurchase": { "type": "number" },
+        "maxCoinPurchase": { "type": "number" },
+        "minWithdrawal": { "type": "number" },
+        "maxWithdrawal": { "type": "number" },
+        "supportEmail": { "type": "string", "minLength": 3, "maxLength": 254 },
+        "maintenanceMode": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["settingsId", "websiteName", "upiId", "upiDisplayName", "paymentInstructions", "gatewayProvider", "coinRate", "minCoinPurchase", "maxCoinPurchase", "minWithdrawal", "maxWithdrawal", "supportEmail", "maintenanceMode", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User and system notification.",
+      "type": "object",
+      "properties": {
+        "notificationId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "message": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "category": { "type": "string", "enum": ["auth", "payment", "coin", "plan", "task", "withdrawal", "announcement"] },
+        "status": { "type": "string", "enum": ["unread", "read"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["notificationId", "uid", "title", "message", "category", "status", "createdAt"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "User help and support ticket.",
+      "type": "object",
+      "properties": {
+        "ticketId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "subject": { "type": "string", "minLength": 3, "maxLength": 200 },
+        "message": { "type": "string", "minLength": 5, "maxLength": 2000 },
+        "status": { "type": "string", "enum": ["open", "in_progress", "resolved", "closed"] },
+        "adminReply": { "type": "string", "minLength": 0, "maxLength": 2000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ticketId", "uid", "userName", "subject", "message", "status", "adminReply", "createdAt", "updatedAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable admin action audit trail.",
+      "type": "object",
+      "properties": {
+        "logId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "adminUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "adminEmail": { "type": "string", "minLength": 3, "maxLength": 254 },
+        "action": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "target": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "details": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["logId", "adminUid", "adminEmail", "action", "target", "details", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/admins/{uid}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Verified administrator access registry."
+    },
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles isolated by owner or admin."
+    },
+    "/wallets/{uid}": {
+      "schema": { "$ref": "#/entities/Wallet" },
+      "description": "User fiat and coin wallet balances."
+    },
+    "/plans/{planId}": {
+      "schema": { "$ref": "#/entities/Plan" },
+      "description": "Configurable reward and investment plans."
+    },
+    "/investments/{investmentId}": {
+      "schema": { "$ref": "#/entities/Investment" },
+      "description": "User active and completed plan subscriptions."
+    },
+    "/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/Task" },
+      "description": "Admin-managed reward tasks."
+    },
+    "/taskSubmissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/TaskSubmission" },
+      "description": "User task completion submissions and verification state."
+    },
+    "/payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/Payment" },
+      "description": "Payment orders and UPI deposit verification records."
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Immutable financial and coin ledger."
+    },
+    "/withdrawalRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/WithdrawalRequest" },
+      "description": "User withdrawal requests and payout tracking."
+    },
+    "/bankDetails/{uid}": {
+      "schema": { "$ref": "#/entities/BankDetails" },
+      "description": "Protected user bank payout details."
+    },
+    "/upiDetails/{uid}": {
+      "schema": { "$ref": "#/entities/UpiDetails" },
+      "description": "Protected user UPI payout details."
+    },
+    "/adminSettings/{settingsId}": {
+      "schema": { "$ref": "#/entities/AdminSettings" },
+      "description": "Global platform configuration."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "User notifications and admin announcements."
+    },
+    "/supportTickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "User support tickets and admin replies."
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Immutable admin audit log records."
+    },
+    "/upiAccounts/{upiAccountId}": {
+      "schema": { "$ref": "#/entities/UpiAccount" },
+      "description": "Admin-managed merchant UPI receiving handles."
+    },
+    "/upiAssignments/{assignmentId}": {
+      "schema": { "$ref": "#/entities/UpiAssignment" },
+      "description": "UPI assignment history per payment request."
+    },
+    "/upiAnalytics/{upiAccountId}": {
+      "schema": { "$ref": "#/entities/UpiAnalytics" },
+      "description": "Admin-only aggregated analytics per UPI account."
+    },
+    "/upiRotation/{rotationId}": {
+      "schema": { "$ref": "#/entities/UpiRotation" },
+      "description": "Round-robin UPI rotation pointer."
+    }
+  }
+}

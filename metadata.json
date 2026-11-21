@@ -1,0 +1,6 @@
+{
+  "name": "Rewardify",
+  "description": "Coin-based rewards, UPI & gateway payments, task verification, and configurable investment plan platform with Admin and User dashboards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
